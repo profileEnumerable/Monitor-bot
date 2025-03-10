@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "air-alert-bot": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
