@@ -5,7 +5,7 @@ class Program
 {
     static async Task Main()
     {
-        var botClient = new TelegramBotClient("");
+        var botClient = new TelegramBotClient(Environment.GetEnvironmentVariable("TELEGRAM_TOKEN"));
 
         var tdClient = new TdClient();
 
@@ -23,9 +23,11 @@ class Program
             {
                 if (newMessageFromChannel?.Message.Content is TdApi.MessageContent.MessageText messageText)
                 {
-                    if (messageText.Text.Text == "")
+                    string[] keyWords = Environment.GetEnvironmentVariable("KEY_WORDS").Split(",");
+
+                    if (keyWords.Any(keyWord => messageText.Text.Text.Contains(keyWord)))
                     {
-                        await botClient.SendMessage(446128502, messageText.Text.Text);
+                        await botClient.SendMessage(int.Parse(Environment.GetEnvironmentVariable("CHAT_ID")), messageText.Text.Text);
                     }
                 }
             }
@@ -48,8 +50,8 @@ class Program
                     UseChatInfoDatabase = true,
                     UseMessageDatabase = true,
                     UseSecretChats = false,
-                    ApiId = 25401799,
-                    ApiHash = "89214c5fbe668ac9a2d2dc38723c3810",
+                    ApiId = int.Parse(Environment.GetEnvironmentVariable("API_ID")),
+                    ApiHash = Environment.GetEnvironmentVariable("API_HASH"),
                     SystemLanguageCode = "en",
                     DeviceModel = "PC",
                     ApplicationVersion = "1.0",
