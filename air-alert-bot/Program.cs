@@ -27,6 +27,7 @@ class Program
 
                     if (keyWords.Any(keyWord => messageText.Text.Text.Contains(keyWord)))
                     {
+                        Console.WriteLine(messageText + " has arrived");
                         await botClient.SendMessage(int.Parse(Environment.GetEnvironmentVariable("CHAT_ID")), messageText.Text.Text);
                     }
                 }
