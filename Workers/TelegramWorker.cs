@@ -38,8 +38,8 @@ namespace AspNet_Air_Alert_Bot.Workers
 
                         if (keyWords.Any(keyWord => messageText.Text.Text.Contains(keyWord)))
                         {
-                            await botClient.SendMessage(int.Parse(Environment.GetEnvironmentVariable("CHAT_ID")), messageText.Text.Text);
                         }
+                        await botClient.SendMessage(int.Parse(Environment.GetEnvironmentVariable("CHAT_ID")), messageText.Text.Text);
                     }
                 }
             };
