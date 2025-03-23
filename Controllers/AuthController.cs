@@ -55,10 +55,11 @@ namespace AspNet_Air_Alert_Bot.Controllers
             {
                 await _tdClient.ExecuteAsync(
                     new TdApi.SetAuthenticationPhoneNumber { PhoneNumber = Environment.GetEnvironmentVariable("PHONE_NUMBER") });
+                _logger.LogInformation("Phone number sucessfully set");
             }
             catch (Exception)
             {
-                _logger.LogInformation("Phone number sucessfully sent");
+                _logger.LogError("Error setting phone number");
                 throw;
             }
         }
