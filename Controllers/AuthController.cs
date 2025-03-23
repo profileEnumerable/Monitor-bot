@@ -18,39 +18,52 @@ namespace AspNet_Air_Alert_Bot.Controllers
             _tdClient = tdClient;
         }
 
-        [HttpPost("send-params")]
+        [HttpPost("configure-client")]
         public async Task SendParams()
         {
             _logger.LogInformation("Sending TDLib params ...");
-
-            await _tdClient.ExecuteAsync(new TdApi.SetTdlibParameters
+            try
             {
-                UseTestDc = false,
-                DatabaseDirectory = "tdlib",
-                UseFileDatabase = true,
-                UseChatInfoDatabase = true,
-                UseMessageDatabase = true,
-                UseSecretChats = false,
-                ApiId = int.Parse(Environment.GetEnvironmentVariable("API_ID")),
-                ApiHash = Environment.GetEnvironmentVariable("API_HASH"),
-                SystemLanguageCode = "en",
-                DeviceModel = "PC",
-                ApplicationVersion = "1.0",
-            });
-        }
+                await _tdClient.ExecuteAsync(new TdApi.SetTdlibParameters
+                {
+                    UseTestDc = false,
+                    DatabaseDirectory = "tdlib",
+                    UseFileDatabase = true,
+                    UseChatInfoDatabase = true,
+                    UseMessageDatabase = true,
+                    UseSecretChats = false,
+                    ApiId = int.Parse(Environment.GetEnvironmentVariable("API_ID")),
+                    ApiHash = Environment.GetEnvironmentVariable("API_HASH"),
+                    SystemLanguageCode = "en",
+                    DeviceModel = "PC",
+                    ApplicationVersion = "1.0",
+                });
 
-        [HttpPost("send-phone-number")]
-        public async Task SendPhoneNumber()
-        {
-            _logger.LogInformation("Sending phone number ...");
-            await _tdClient.ExecuteAsync(
-                new TdApi.SetAuthenticationPhoneNumber { PhoneNumber = Environment.GetEnvironmentVariable("PHONE_NUMBER") });
+                await _tdClient.ExecuteAsync(
+                  new TdApi.SetAuthenticationPhoneNumber { PhoneNumber = Environment.GetEnvironmentVariable("PHONE_NUMBER") });
+
+                _logger.LogDebug("Client is sucessfully configured");
+            }
+            catch (Exception)
+            {
+                _logger.LogError("Error while configuring client");
+                throw;
+            }
         }
 
         [HttpPost("send-varification-code")]
         public async Task SendVerificationCode([FromBody] int code)
         {
-            await _tdClient.ExecuteAsync(new TdApi.CheckAuthenticationCode { Code = code.ToString() });
+            try
+            {
+                await _tdClient.ExecuteAsync(new TdApi.CheckAuthenticationCode { Code = code.ToString() });
+                _logger.LogDebug("Verification code is sucessfully sent");
+            }
+            catch (Exception)
+            {
+                _logger.LogError("Error while sending verification code");
+                throw;
+            }
         }
     }
 }
