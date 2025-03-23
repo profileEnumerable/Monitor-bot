@@ -11,17 +11,17 @@ namespace AspNet_Air_Alert_Bot.Controllers
         private readonly TdClient _tdClient;
 
         public AuthController(
-            ILogger<AuthController> logger, 
+            ILogger<AuthController> logger,
             TdClient tdClient)
         {
             _logger = logger;
             _tdClient = tdClient;
         }
 
-        [HttpPost("configure-client")]
+        [HttpPost("set-params")]
         public async Task SendParams()
         {
-            _logger.LogInformation("Sending TDLib params ...");
+            _logger.LogInformation("Setting TDLib params ...");
             try
             {
                 await _tdClient.ExecuteAsync(new TdApi.SetTdlibParameters
@@ -39,9 +39,6 @@ namespace AspNet_Air_Alert_Bot.Controllers
                     ApplicationVersion = "1.0",
                 });
 
-                await _tdClient.ExecuteAsync(
-                  new TdApi.SetAuthenticationPhoneNumber { PhoneNumber = Environment.GetEnvironmentVariable("PHONE_NUMBER") });
-
                 _logger.LogInformation("Client is sucessfully configured");
             }
             catch (Exception)
@@ -51,7 +48,22 @@ namespace AspNet_Air_Alert_Bot.Controllers
             }
         }
 
-        [HttpPost("send-varification-code")]
+        [HttpPost("set-phone-number")]
+        public async Task SendPhoneNumber()
+        {
+            try
+            {
+                await _tdClient.ExecuteAsync(
+                    new TdApi.SetAuthenticationPhoneNumber { PhoneNumber = Environment.GetEnvironmentVariable("PHONE_NUMBER") });
+            }
+            catch (Exception)
+            {
+                _logger.LogInformation("Phone number sucessfully sent");
+                throw;
+            }
+        }
+
+        [HttpPost("send-verification-code")]
         public async Task SendVerificationCode([FromBody] int code)
         {
             try
