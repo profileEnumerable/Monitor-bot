@@ -1,6 +1,0 @@
-@AspNet_Air_Alert_Bot_HostAddress = http://localhost:5134
-
-GET {{AspNet_Air_Alert_Bot_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
