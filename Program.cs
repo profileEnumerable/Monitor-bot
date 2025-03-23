@@ -28,4 +28,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapGet("/", () => "Hello from Railway!");
+
 app.Run();
