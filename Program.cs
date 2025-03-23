@@ -7,6 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddHostedService<TelegramWorker>();
+
+var tdClient = new TdClient();
+await tdClient.SetLogVerbosityLevelAsync(0);
+
 builder.Services.AddSingleton<TdClient>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
