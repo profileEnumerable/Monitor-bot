@@ -42,7 +42,7 @@ namespace AspNet_Air_Alert_Bot.Controllers
                 await _tdClient.ExecuteAsync(
                   new TdApi.SetAuthenticationPhoneNumber { PhoneNumber = Environment.GetEnvironmentVariable("PHONE_NUMBER") });
 
-                _logger.LogDebug("Client is sucessfully configured");
+                _logger.LogInformation("Client is sucessfully configured");
             }
             catch (Exception)
             {
