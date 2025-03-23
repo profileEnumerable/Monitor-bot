@@ -21,7 +21,7 @@ namespace AspNet_Air_Alert_Bot.Controllers
         [HttpPost("send-params")]
         public async Task SendParams()
         {
-            _logger.LogInformation("Sending TDLib params ...");
+            _logger.LogInformation("Sending params ...");
 
             await _tdClient.ExecuteAsync(new TdApi.SetTdlibParameters
             {
