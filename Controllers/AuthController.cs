@@ -42,7 +42,7 @@ namespace AspNet_Air_Alert_Bot.Controllers
         [HttpPost("send-phone-number")]
         public async Task SendPhoneNumber()
         {
-            _logger.LogInformation("Введіть номер телефону: ");
+            _logger.LogInformation("Sending phone number ...");
             await _tdClient.ExecuteAsync(
                 new TdApi.SetAuthenticationPhoneNumber { PhoneNumber = Environment.GetEnvironmentVariable("PHONE_NUMBER") });
         }
