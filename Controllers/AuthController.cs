@@ -48,9 +48,9 @@ namespace AspNet_Air_Alert_Bot.Controllers
         }
 
         [HttpPost("send-varification-code")]
-        public async Task SendVerificationCode([FromBody] string code)
+        public async Task SendVerificationCode([FromBody] int code)
         {
-            await _tdClient.ExecuteAsync(new TdApi.CheckAuthenticationCode { Code = code });
+            await _tdClient.ExecuteAsync(new TdApi.CheckAuthenticationCode { Code = code.ToString() });
         }
     }
 }
