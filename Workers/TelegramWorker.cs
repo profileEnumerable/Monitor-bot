@@ -26,7 +26,6 @@ namespace AspNet_Air_Alert_Bot.Workers
         {
             if (update is TdApi.Update.UpdateNewMessage newMessageFromChannel)
             {
-                await botClient.SendMessage(int.Parse(Environment.GetEnvironmentVariable("CHAT_ID")), "Нове повідомлення !");
                 if (newMessageFromChannel?.Message.Content is MessageText messageText)
                 {
                     string[] keyWords = Environment.GetEnvironmentVariable("KEY_WORDS").Split(",");
