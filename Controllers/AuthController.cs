@@ -7,11 +7,11 @@ namespace AspNet_Air_Alert_Bot.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly Logger<AuthController> _logger;
+        private readonly ILogger<AuthController> _logger;
         private readonly TdClient _tdClient;
 
         public AuthController(
-            Logger<AuthController> logger, 
+            ILogger<AuthController> logger, 
             TdClient tdClient)
         {
             _logger = logger;
