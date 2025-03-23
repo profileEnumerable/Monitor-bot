@@ -21,7 +21,7 @@ namespace AspNet_Air_Alert_Bot.Controllers
         [HttpPost("send-params")]
         public async Task SendParams()
         {
-            _logger.LogInformation("Sending params ...");
+            _logger.LogInformation("Sending TDLib params ...");
 
             await _tdClient.ExecuteAsync(new TdApi.SetTdlibParameters
             {
@@ -47,11 +47,10 @@ namespace AspNet_Air_Alert_Bot.Controllers
                 new TdApi.SetAuthenticationPhoneNumber { PhoneNumber = Environment.GetEnvironmentVariable("PHONE_NUMBER") });
         }
 
-        [HttpPost("send-verification-code")]
+        [HttpPost("send-varification-code")]
         public async Task SendVerificationCode([FromBody] int code)
         {
             await _tdClient.ExecuteAsync(new TdApi.CheckAuthenticationCode { Code = code.ToString() });
-            _logger.LogInformation("Verification code was sent");
         }
     }
 }
