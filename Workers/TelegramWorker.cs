@@ -1,5 +1,6 @@
 ﻿using TdLib;
 using Telegram.Bot;
+using static TdLib.TdApi;
 using static TdLib.TdApi.MessageContent;
 
 namespace AspNet_Air_Alert_Bot.Workers
@@ -34,6 +35,63 @@ namespace AspNet_Air_Alert_Bot.Workers
                     }
                 }
             };
+
+            _tdClient.UpdateReceived += async (sender, update) =>
+            {
+                if (update is TdApi.Update.UpdateAuthorizationState authUpdate)
+                {
+                    await HandleAuth(authUpdate.AuthorizationState);
+                }
+            };
+        }
+
+        private async Task HandleAuth(AuthorizationState authState)
+        {
+            switch (authState)
+            {
+                case AuthorizationState.AuthorizationStateWaitTdlibParameters:
+                    await _tdClient.ExecuteAsync(new SetTdlibParameters
+                    {
+                        UseTestDc = false,
+                        DatabaseDirectory = "tdlib",
+                        UseFileDatabase = true,
+                        UseChatInfoDatabase = true,
+                        UseMessageDatabase = true,
+                        UseSecretChats = false,
+                        ApiId = int.Parse(Environment.GetEnvironmentVariable("API_ID")),
+                        ApiHash = Environment.GetEnvironmentVariable("API_HASH"),
+                        SystemLanguageCode = "en",
+                        DeviceModel = "PC",
+                        ApplicationVersion = "1.0",
+                    });
+                    break;
+
+                case AuthorizationState.AuthorizationStateWaitPhoneNumber:
+                    _logger.LogInformation("Sending phone number ...");
+                    await _tdClient.ExecuteAsync(
+                        new SetAuthenticationPhoneNumber
+                        {
+                            PhoneNumber = Environment.GetEnvironmentVariable("PHONE_NUMBER")
+                        });
+                    break;
+
+                //case AuthorizationState.AuthorizationStateWaitCode:
+                //    Console.WriteLine("Введи код, що прийшов у Telegram:");
+                //    string code = Console.ReadLine(); // ⚠️ для ASP.NET краще через API (див нижче)
+                //    await _client.SendAsync(new TdApi.CheckAuthenticationCode
+                //    {
+                //        Code = code
+                //    });
+                //    break;
+
+                case TdApi.AuthorizationState.AuthorizationStateReady:
+                    Console.WriteLine("✅ Авторизовано успішно!");
+                    break;
+
+                default:
+                    Console.WriteLine($"⚠️ Unknown auth state: {authState.GetType().Name}");
+                    break;
+            }
         }
 
         private static async Task RepostIfMatchesKeywords(TelegramBotClient botClient, MessageText messageText)
