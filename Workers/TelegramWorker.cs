@@ -25,6 +25,22 @@ namespace AspNet_Air_Alert_Bot.Workers
             var botClient = new TelegramBotClient(Environment.GetEnvironmentVariable("TELEGRAM_TOKEN"));
             await botClient.SendMessage(int.Parse(Environment.GetEnvironmentVariable("CHAT_ID")), "Я почав працювати 🔛");
 
+            _logger.LogInformation("Sending params ...");
+            await _tdClient.ExecuteAsync(new SetTdlibParameters
+            {
+                UseTestDc = false,
+                DatabaseDirectory = "tdlib",
+                UseFileDatabase = true,
+                UseChatInfoDatabase = true,
+                UseMessageDatabase = true,
+                UseSecretChats = false,
+                ApiId = int.Parse(Environment.GetEnvironmentVariable("API_ID")),
+                ApiHash = Environment.GetEnvironmentVariable("API_HASH"),
+                SystemLanguageCode = "en",
+                DeviceModel = "PC",
+                ApplicationVersion = "1.0",
+            });
+
             _tdClient.UpdateReceived += async (sender, update) =>
             {
                 if (update is TdApi.Update.UpdateNewMessage newMessageFromChannel)
@@ -34,10 +50,7 @@ namespace AspNet_Air_Alert_Bot.Workers
                         await RepostIfMatchesKeywords(botClient, messageText);
                     }
                 }
-            };
 
-            _tdClient.UpdateReceived += async (sender, update) =>
-            {
                 if (update is TdApi.Update.UpdateAuthorizationState authUpdate)
                 {
                     await HandleAuth(authUpdate.AuthorizationState);
@@ -49,23 +62,6 @@ namespace AspNet_Air_Alert_Bot.Workers
         {
             switch (authState)
             {
-                case AuthorizationState.AuthorizationStateWaitTdlibParameters:
-                    await _tdClient.ExecuteAsync(new SetTdlibParameters
-                    {
-                        UseTestDc = false,
-                        DatabaseDirectory = "tdlib",
-                        UseFileDatabase = true,
-                        UseChatInfoDatabase = true,
-                        UseMessageDatabase = true,
-                        UseSecretChats = false,
-                        ApiId = int.Parse(Environment.GetEnvironmentVariable("API_ID")),
-                        ApiHash = Environment.GetEnvironmentVariable("API_HASH"),
-                        SystemLanguageCode = "en",
-                        DeviceModel = "PC",
-                        ApplicationVersion = "1.0",
-                    });
-                    break;
-
                 case AuthorizationState.AuthorizationStateWaitPhoneNumber:
                     _logger.LogInformation("Sending phone number ...");
                     await _tdClient.ExecuteAsync(
@@ -85,7 +81,7 @@ namespace AspNet_Air_Alert_Bot.Workers
                 //    break;
 
                 case TdApi.AuthorizationState.AuthorizationStateReady:
-                    Console.WriteLine("✅ Авторизовано успішно!");
+                    Console.WriteLine("✅ Successfully authtorized!");
                     break;
 
                 default:
