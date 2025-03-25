@@ -43,17 +43,17 @@ namespace AspNet_Air_Alert_Bot.Workers
 
             _tdClient.UpdateReceived += async (sender, update) =>
             {
-                if (update is TdApi.Update.UpdateNewMessage newMessageFromChannel)
+                switch (update)
                 {
-                    if (newMessageFromChannel?.Message.Content is MessageText messageText)
-                    {
-                        await RepostIfMatchesKeywords(botClient, messageText);
-                    }
-                }
-
-                if (update is TdApi.Update.UpdateAuthorizationState authUpdate)
-                {
-                    await HandleAuth(authUpdate.AuthorizationState);
+                    case Update.UpdateNewMessage newMessageFromChannel:
+                        if (newMessageFromChannel?.Message.Content is MessageText messageText)
+                        {
+                            await RepostIfMatchesKeywords(botClient, messageText);
+                        }
+                        break;
+                    case Update.UpdateAuthorizationState authUpdate:
+                        await HandleAuth(authUpdate.AuthorizationState);
+                        break;
                 }
             };
         }
@@ -71,16 +71,7 @@ namespace AspNet_Air_Alert_Bot.Workers
                         });
                     break;
 
-                //case AuthorizationState.AuthorizationStateWaitCode:
-                //    Console.WriteLine("Введи код, що прийшов у Telegram:");
-                //    string code = Console.ReadLine(); // ⚠️ для ASP.NET краще через API (див нижче)
-                //    await _client.SendAsync(new TdApi.CheckAuthenticationCode
-                //    {
-                //        Code = code
-                //    });
-                //    break;
-
-                case TdApi.AuthorizationState.AuthorizationStateReady:
+                case AuthorizationState.AuthorizationStateReady:
                     Console.WriteLine("✅ Successfully authtorized!");
                     break;
 
