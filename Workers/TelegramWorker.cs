@@ -81,12 +81,13 @@ namespace AspNet_Air_Alert_Bot.Workers
             }
         }
 
-        private static async Task RepostIfMatchesKeywords(TelegramBotClient botClient, MessageText messageText)
+        private async Task RepostIfMatchesKeywords(TelegramBotClient botClient, MessageText messageText)
         {
             string[] keyWords = Environment.GetEnvironmentVariable("KEY_WORDS").Split(",");
 
             if (keyWords.Any(messageText.Text.Text.Contains))
             {
+                _logger.LogInformation("🆕 Some message has been posted");
                 await botClient.SendMessage(int.Parse(Environment.GetEnvironmentVariable("CHAT_ID")), messageText.Text.Text);
             }
         }
