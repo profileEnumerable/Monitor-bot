@@ -85,7 +85,7 @@ namespace AspNet_Air_Alert_Bot.Workers
         {
             string[] keyWords = Environment.GetEnvironmentVariable("KEY_WORDS").Split(",");
 
-            if (keyWords.Any(messageText.Text.Text.Contains))
+            if (keyWords.Any(keyWord => messageText.Text.Text.Contains(keyWord,StringComparison.InvariantCultureIgnoreCase)))
             {
                 _logger.LogInformation("🆕 Some message has been posted");
                 await botClient.SendMessage(int.Parse(Environment.GetEnvironmentVariable("CHAT_ID")), messageText.Text.Text);
