@@ -1,13 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using TdLib;
 
 namespace AspNet_Air_Alert_Bot.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController(TdClient tdClient) : ControllerBase
+    public class AuthController : ControllerBase
     {
-        private readonly TdClient _tdClient = tdClient;
+        private readonly TdClient _tdClient;
+
+        public AuthController(TdClient tdClient)
+        {
+            _tdClient = tdClient;
+        }
 
         [HttpPost("send-verification-code")]
         public async Task SendVerificationCode([FromBody] int code)
