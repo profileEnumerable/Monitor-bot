@@ -83,12 +83,23 @@ namespace AspNet_Air_Alert_Bot.Workers
 
         private async Task RepostIfMatchesKeywords(TelegramBotClient botClient, MessageText messageText)
         {
-            string[] keyWords = Environment.GetEnvironmentVariable("KEY_WORDS").Split(",");
+            string[] keyWords = Environment.GetEnvironmentVariable("ALLOWED_KEY_WORDS").Split(",");
+            string[] deniedKeyWords = Environment.GetEnvironmentVariable("DENIED_KEY_WORDS").Split(",");
 
-            if (keyWords.Any(keyWord => messageText.Text.Text.Contains(keyWord,StringComparison.InvariantCultureIgnoreCase)))
+            if (ContainsAllowed(messageText, keyWords) && !ContainsDenied(messageText, deniedKeyWords))
             {
                 _logger.LogInformation("🆕 Some message has been posted");
                 await botClient.SendMessage(int.Parse(Environment.GetEnvironmentVariable("CHAT_ID")), messageText.Text.Text);
+            }
+
+            static bool ContainsAllowed(MessageText messageText, string[] keyWords)
+            {
+                return keyWords.Any(keyWord => messageText.Text.Text.Contains(keyWord, StringComparison.InvariantCultureIgnoreCase));
+            }
+
+            static bool ContainsDenied(MessageText messageText, string[] deniedKeyWords)
+            {
+                return deniedKeyWords.Any(keyWord => messageText.Text.Text.Contains(keyWord, StringComparison.InvariantCultureIgnoreCase));
             }
         }
     }
