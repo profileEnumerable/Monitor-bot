@@ -43,6 +43,8 @@ namespace AspNet_Air_Alert_Bot.Workers
 
             _tdClient.UpdateReceived += async (sender, update) =>
             {
+                _logger.LogInformation("Update happened !");
+                _logger.LogInformation(update.ToString());
                 switch (update)
                 {
                     case Update.UpdateNewMessage newMessageFromChannel:
