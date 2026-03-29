@@ -23,7 +23,7 @@ namespace AspNet_Air_Alert_Bot.Workers
             _logger.LogInformation("I started working !");
 
             var botClient = new TelegramBotClient(Environment.GetEnvironmentVariable("TELEGRAM_TOKEN"));
-            await botClient.SendMessage(int.Parse(Environment.GetEnvironmentVariable("CHAT_ID")), "Я почав працювати 🔛");
+            await botClient.SendMessage(int.Parse(Environment.GetEnvironmentVariable("CHAT_ID")), "Я почав працювати з новими силами ! 🔛");
 
             _logger.LogInformation("Sending params ...");
             await _tdClient.ExecuteAsync(new SetTdlibParameters
@@ -43,8 +43,6 @@ namespace AspNet_Air_Alert_Bot.Workers
 
             _tdClient.UpdateReceived += async (sender, update) =>
             {
-                _logger.LogInformation("Update happened !");
-                _logger.LogInformation(update.ToString());
                 switch (update)
                 {
                     case Update.UpdateNewMessage newMessageFromChannel:
@@ -83,26 +81,29 @@ namespace AspNet_Air_Alert_Bot.Workers
             }
         }
 
-        private async Task RepostIfMatchesKeywords(TelegramBotClient botClient, MessageText messageText)
+        private async Task RepostIfMatchesKeywords(TelegramBotClient botClient, MessageText message)
         {
-            string[] keyWords = Environment.GetEnvironmentVariable("ALLOWED_KEY_WORDS").Split(",");
+            string[] allowedKeyWords = Environment.GetEnvironmentVariable("ALLOWED_KEY_WORDS").Split(",");
             string[] deniedKeyWords = Environment.GetEnvironmentVariable("DENIED_KEY_WORDS").Split(",");
 
-            if (ContainsAllowed(messageText, keyWords) && !ContainsDenied(messageText, deniedKeyWords))
+            string messageText = message.Text.Text;
+
+            if (ShouldPostMessage(allowedKeyWords, deniedKeyWords, messageText))
             {
                 _logger.LogInformation("🆕 Some message has been posted");
-                await botClient.SendMessage(int.Parse(Environment.GetEnvironmentVariable("CHAT_ID")), messageText.Text.Text);
+                await botClient.SendMessage(int.Parse(Environment.GetEnvironmentVariable("CHAT_ID")), messageText);
             }
 
-            static bool ContainsAllowed(MessageText messageText, string[] keyWords)
-            {
-                return keyWords.Any(keyWord => messageText.Text.Text.Contains(keyWord, StringComparison.InvariantCultureIgnoreCase));
-            }
+        }
 
-            static bool ContainsDenied(MessageText messageText, string[] deniedKeyWords)
-            {
-                return deniedKeyWords.Any(keyWord => messageText.Text.Text.Contains(keyWord, StringComparison.InvariantCultureIgnoreCase));
-            }
+        public static bool ShouldPostMessage(string[] allowedKeyWords, string[] deniedKeyWords, string messageText)
+        {
+            return ContainsKeywords(messageText, allowedKeyWords) && !ContainsKeywords(messageText, deniedKeyWords);
+        }
+
+        private static bool ContainsKeywords(string messageText, string[] allowedKeyWords)
+        {
+            return allowedKeyWords.Any(keyWord => messageText.Contains(keyWord, StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }
